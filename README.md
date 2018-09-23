@@ -6,7 +6,6 @@
 $ npm install
 ```
 
-
 **To run the server
 ```sh
 $ node app.js
