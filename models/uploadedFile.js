@@ -3,8 +3,7 @@ const Schema = mongoose.Schema;
 
 const uploadedFileSchema = new Schema({
   name: String,
-  path: String,
-  isText: Boolean
+  path: String
 });
 
 const UploadedFile = mongoose.model("UploadedFile", uploadedFileSchema);

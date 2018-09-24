@@ -21,24 +21,11 @@ const storage = multer.diskStorage({
     cb(null, './public');
   },
   filename: (req, file, cb) => {
-    //add Date.now() to avoid to have same file name
+    //add Date.now() to give an unique file name
     cb(null, Date.now() +  file.originalname);
   }
 });
 const upload = multer({ storage: storage });
-
-// const lineCount = (file, cb) => {
-//   let i;
-//   let count = 0;
-//   fs.createReadStream(file)
-//     .on('err', err => cb(err))
-//     .on('data', chunk => {
-//       for (i = 0; i < chunk.length; ++i) {
-//         if (chunk[i] === 10) count++;
-//       }
-//     })
-//     .on('end', () => cb(null, count));
-// }
 
 app.get('/', (req, res) => {
   UploadedFile.find((err, files) => {
@@ -47,26 +34,29 @@ app.get('/', (req, res) => {
 });
 
 app.post('/upload', upload.single('file'), (req, res) => {
-  // check the file is text file or not
-  // const arr = req.file.originalname.split('.');
-  // const checkTextFile = arr.length < 2 ? false : arr[arr.length - 1].toLowerCase() === 'txt' ? true : false;
-
-  const filePath = `/${req.file.filename}`;
-  // lineCount(filePath);
-
   const uploadedfile = new UploadedFile({
     name: req.file.filename,
-    path: filePath,
-    isText: checkTextFile
+    path: `/${req.file.filename}`
   });
   uploadedfile.save((err) => {
     res.redirect('/');
   });
 });
 
-app.get('/count/:fileName', (req, res) => {
-  const file = '/' + req.params.fileName;
-  res.send(`<p>this file contains line(s).</p>`)
+app.get('/count', (req, res) => {
+  fs.readdir('./public', function(err, files) {
+    let countArr = [];
+    if(err) throw err;
+    files.map(file => {
+      let arr = file.split('.');
+      if (arr.length > 1 && arr[arr.length - 1].toLowerCase() === 'txt') {
+        const content = fs.readFileSync('./public/' + file);
+        const lines = content.toString().split('\n').length - 1;
+        countArr.push(lines);
+      }
+    })
+    res.send(`<p>${countArr.length} .txt file(s) uploaded.<br>total ${countArr.reduce((a, b) => a + b)} line(s).</p>`)
+  })
 });
 
 app.listen(3001, () => {

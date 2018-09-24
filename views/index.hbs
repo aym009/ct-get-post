@@ -6,20 +6,18 @@
   <link rel='stylesheet' href='/css/style.css' />
 </head>
 <body>
-  <section>
+  <section class="txt-c">
     <form action="/upload" method="POST" enctype="multipart/form-data">
       <input type="file" name="file">
       <button type="submit">Upload</button>
     </form>
+    <a href="/count" class="btn">Count</a>
   </section>
   <section>
     <ul>
       {{#each files}}
         <li>
           <a href="{{ this.path }}">{{ this.name }}</a>
-          {{#if this.isText}}
-            {{!-- <a href="/count{{ this.path }}" class="btn">Count</a> --}}
-          {{/if}}
         </li>
       {{/each}}
     </ul>
